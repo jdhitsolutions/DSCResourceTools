@@ -1,0 +1,4 @@
+Changelog for DSCResource Tools
+
+v0.0.1.0
+initial github release
