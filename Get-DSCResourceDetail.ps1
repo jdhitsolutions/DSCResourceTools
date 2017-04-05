@@ -1,9 +1,5 @@
 ﻿#requires -version 4.0
 
-<#
-
-
-#>
 
 Function Get-DSCResourceDetail {
 
@@ -103,7 +99,7 @@ http://jdhitsolutions.com/blog/essential-powershell-resources/
 Get-DSCResource
 
 #>
-
+[cmdletbinding(defaultparametersetName = 'module')]
 Param(
 [Parameter(
 Position=0,
@@ -118,18 +114,21 @@ ValueFromPipelineByPropertyName
 [Parameter(
 Mandatory,
 HelpMessage = "Enter the name of the resource's module",
-ValueFromPipelineByPropertyName
+ValueFromPipelineByPropertyName,
+ParameterSetName = "module"
 )]
 [ValidateNotNullorEmpty()]
 #the name of the resources module
-[string]$Module = "cActiveDirectory",
-
+[string]$Module,
+[Parameter(Mandatory,ParameterSetName = "modulefqn")]
+[object]$FullyQualifiedName,
 [Parameter(
 Mandatory,
 HelpMessage ="Enter the path to the module base psm1 file",
 ValueFromPipelineByPropertyName
 )]
 [ValidateNotNullorEmpty()]
+[ValidatePattern({\.psm1$})]
 #The path to the module root
 [string]$Path
 )
@@ -143,6 +142,14 @@ Begin {
 
 Process {
 
+#get the module
+if ($FullyQualifiedName) {
+  $themodule = Get-Module -FullyQualifiedName $FullyQualifiedName -ListAvailable
+}
+else {
+  $themodule = Get-Module -name $module -ListAvailable
+}
+#the path to the module base psm1 file
 Write-Verbose "[PROCESS] Processing $path"
 
 $AST = [System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$astTokens,[ref]$astErr)
@@ -150,8 +157,7 @@ $AST = [System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$ast
 $h = $astTokens | group tokenflags -AsHashTable -AsString
 
 Write-Verbose ("[Process] Details for DSC Resource {0} [{1}]" -f $name,$module)
-$moduleDetails = Get-Module $module -list | Select Name,Description,Version,Required*
-
+$moduleDetails = $themodule  | Select Name,Description,Version,Required*
 
 $CommandDetails = ($h.CommandName).where({$_.text -notmatch "-TargetResource$"}) |
 foreach {

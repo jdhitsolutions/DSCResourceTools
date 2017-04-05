@@ -4,4 +4,6 @@
 . $PSScriptRoot\Get-DscResourceCommands.ps1
 . $PSScriptRoot\Get-DscResourceDetail.ps1
 . $PSScriptRoot\Get-DscResourceReport.ps1
+. $PSScriptRoot\Find-DuplicateResource.ps1
+. $PSScriptRoot\Compare-DscResource.ps1
 

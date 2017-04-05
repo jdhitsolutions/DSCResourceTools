@@ -1,4 +1,10 @@
 Changelog for DSCResource Tools
 
+v0.0.2.0
+modified commands to use module version numbers
+started developing Test-DSCResourceAvailability
+Added Find-DuplicateDscResource
+Added Compare-DscResource
+
 v0.0.1.0
 initial github release
